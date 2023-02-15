@@ -16,11 +16,12 @@ class ImageGalleryItem extends Component {
     const { opened } = this.state;
     const { picture, tags } = this.props;
     return (
-      <li className={css.ImageGalleryItem} onClick={this.toggleModal}>
+      <li className={css.ImageGalleryItem}>
         <img
           src={this.props.preview}
           alt={this.props.tags}
           className={css.ImageGalleryItemImage}
+          onClick={this.toggleModal}
         />
         {opened && (
           <Modal picture={picture} alt={tags} onClose={this.toggleModal} />

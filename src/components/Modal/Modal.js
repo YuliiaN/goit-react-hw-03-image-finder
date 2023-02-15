@@ -3,22 +3,28 @@ import css from './Modal.module.css';
 
 class Modal extends Component {
   componentDidMount() {
-    window.addEventListener('keydown', this.closeByEsc);
+    window.addEventListener('keydown', this.onCloseByEsc);
   }
 
-  componentWillUmount() {
-    window.removeEventListener('keydown', this.closeByEsc);
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.onCloseByEsc);
   }
 
-  closeByEsc = e => {
-    if (e.code === 'Escape' || e.currentTarget === e.target) {
+  onCloseByEsc = e => {
+    if (e.code === 'Escape') {
+      this.props.onClose();
+    }
+  };
+
+  handleClick = e => {
+    if (e.currentTarget === e.target) {
       this.props.onClose();
     }
   };
 
   render() {
     return (
-      <div className={css.Overlay} onClick={this.props.onClose}>
+      <div className={css.Overlay} onClick={this.handleClick}>
         <div className={css.Modal}>
           <img
             src={this.props.picture}

@@ -15,14 +15,16 @@ export default class App extends Component {
     loading: false,
     error: '',
     images: [],
+    totalHits: 0,
   };
 
   async componentDidUpdate(prevProps, prevState) {
     const { query, page } = this.state;
-    try {
-      // маркер обновления состояния
 
-      if (prevState.query !== query || prevState.page !== page) {
+    // маркер обновления состояния
+
+    if (prevState.query !== query || prevState.page !== page) {
+      try {
         this.setState({ loading: true });
         const { hits, totalHits } = await request(query, page);
 
@@ -37,20 +39,29 @@ export default class App extends Component {
 
         // если все ок
 
-        toast.success(`We have found ${totalHits} images`, {
-          theme: 'colored',
-        });
+        if (page > 1) {
+          toast.success(`We have found ${12} more of ${totalHits} images`, {
+            theme: 'colored',
+          });
+        } else {
+          toast.success(`We have found ${12} of ${totalHits} images`, {
+            theme: 'colored',
+          });
+        }
+
         this.setState(prevState => ({
           images: [...prevState.images, ...hits],
           error: '',
+          totalHits,
         }));
+      } catch (error) {
+        toast.error('Something went wrong', {
+          theme: 'colored',
+        });
+        this.setState({ error: 'Something went wrong' });
+      } finally {
+        this.setState({ loading: false });
       }
-    } catch (error) {
-      toast.error('Something went wrong', {
-        theme: 'colored',
-      });
-    } finally {
-      this.setState({ loading: false });
     }
   }
 
@@ -67,20 +78,21 @@ export default class App extends Component {
       query,
       page: 1,
       images: [],
+      totalHits: 0,
     });
   };
 
   render() {
-    const { images, loading } = this.state;
+    const { images, loading, totalHits } = this.state;
     return (
       <div className="App">
         <Searchbar onSubmit={this.getQuery} />
-        {images.length ? (
-          <>
-            <ImageGallery images={images}></ImageGallery>
-            <Button onClick={this.handleClick} />
-          </>
-        ) : null}
+        {!!images.length && <ImageGallery images={images} />}
+        {images.length !== totalHits && !loading ? (
+          <Button onClick={this.handleClick} />
+        ) : (
+          false
+        )}
         <ToastContainer autoClose={3000} />
         <Triangle
           height="100"

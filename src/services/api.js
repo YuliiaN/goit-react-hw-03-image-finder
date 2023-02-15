@@ -13,7 +13,10 @@ const request = async (query, page) => {
     page,
   };
   const { data } = await axios.get('/', { params });
-  return data;
+  const hits = data.hits.map(({ id, webformatURL, largeImageURL, tags }) => {
+    return { id, webformatURL, largeImageURL, tags };
+  });
+  return { hits, totalHits: data.totalHits };
 };
 
 export default request;
